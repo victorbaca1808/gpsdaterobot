@@ -22,7 +22,7 @@ public class PruebaGCb {
 
     @Column(name = "numero_Telefono",  nullable = false)
     private String numeroTelefono;
-    
+     
     @Column(name = "nombre_Usuario",  nullable = false)
     private String nombreUsuario;
     

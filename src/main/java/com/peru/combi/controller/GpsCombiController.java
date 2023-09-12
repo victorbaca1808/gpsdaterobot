@@ -1,6 +1,8 @@
 package com.peru.combi.controller;
 
 import java.util.Date;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.peru.combi.clases.PruebaGCb;
 import com.peru.combi.clases.Respuesta200;
+import com.peru.combi.clases.lastLocations;
 import com.peru.combi.interfaces.PruebaGpsService;
 
 @RestController
@@ -22,20 +25,18 @@ public class GpsCombiController {
 	private PruebaGpsService pruebaGpsService;
 
     @GetMapping(value="/registrarubigeo/{latitud}/{longitud}/{telefono}/{nombre}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> saveUbication(@PathVariable String latitud, 
+    public ResponseEntity<List<lastLocations>> saveUbication(@PathVariable String latitud, 
     @PathVariable String longitud, @PathVariable String telefono, @PathVariable String nombre) {
-        try { 
-            Respuesta200 vRes = new Respuesta200();
+        try {  
             PruebaGCb pruebaGCb = new PruebaGCb();
             pruebaGCb.setFechaRegistro(new Date());
             pruebaGCb.setGpsCoordenadas(latitud + "/" + longitud);
             pruebaGCb.setNumeroTelefono(telefono);
             pruebaGCb.setNombreUsuario(nombre);
-            pruebaGpsService.grabarGps(pruebaGCb);
-            vRes.setCodigo("200");
-            return ResponseEntity.ok().body(vRes);
+            pruebaGpsService.grabarGps(pruebaGCb); 
+            return ResponseEntity.ok().body(pruebaGpsService.obtenerUltimas3Ubicaciones(telefono));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage()); 
+            return ResponseEntity.internalServerError().body(null);
         }      
     }
 

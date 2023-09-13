@@ -25,7 +25,7 @@ public class GpsCombiController {
 	private PruebaGpsService pruebaGpsService;
 
     @GetMapping(value="/registrarubigeo/{latitud}/{longitud}/{telefono}/{nombre}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<lastLocations>> saveUbication(@PathVariable String latitud, 
+    public ResponseEntity<Respuesta200> saveUbication(@PathVariable String latitud, 
     @PathVariable String longitud, @PathVariable String telefono, @PathVariable String nombre) {
         try {  
             PruebaGCb pruebaGCb = new PruebaGCb();
@@ -34,10 +34,18 @@ public class GpsCombiController {
             pruebaGCb.setNumeroTelefono(telefono);
             pruebaGCb.setNombreUsuario(nombre);
             pruebaGpsService.grabarGps(pruebaGCb); 
-            return ResponseEntity.ok().body(pruebaGpsService.obtenerUltimas3Ubicaciones(telefono));
+            return ResponseEntity.ok().body(new Respuesta200("200"));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(null);
         }      
     }
 
+    @GetMapping(value="/obtenerlocalizaciones/{telefono}/{nombre}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<lastLocations>> getUbications(@PathVariable String telefono, @PathVariable String nombre) {
+        try {   
+            return ResponseEntity.ok().body(pruebaGpsService.obtenerUltimas3Ubicaciones(telefono));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(null);
+        }      
+    }
 }

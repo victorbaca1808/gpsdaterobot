@@ -8,4 +8,8 @@ import lombok.Setter;
 public class Respuesta200 {
     
     private String codigo;
+
+    public Respuesta200(String codigo) {
+        this.codigo = codigo;        
+    }
 }

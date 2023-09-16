@@ -16,7 +16,6 @@ import com.peru.combi.repository.PruebaGCbRepository;
 @Service
 public class PruebaGpsServiceImpl implements PruebaGpsService {
     
-    
     @Autowired
 	private PruebaGCbRepository pruebaGCbRepository;
     

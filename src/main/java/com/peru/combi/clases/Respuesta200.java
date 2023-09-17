@@ -7,9 +7,11 @@ import lombok.Setter;
 @Setter
 public class Respuesta200 {
     
-    private String codigo;
+    private String codigo; 
 
     public Respuesta200(String codigo) {
-        this.codigo = codigo;        
+        this.codigo = codigo;
     }
+
+
 }

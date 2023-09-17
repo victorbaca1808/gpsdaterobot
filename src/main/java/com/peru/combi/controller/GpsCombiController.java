@@ -32,21 +32,26 @@ public class GpsCombiController {
     @Autowired
 	private PruebaGpsService pruebaGpsService;
 
-    @GetMapping(value="/registrarubigeo/{latitud}/{longitud}/{telefono}/{nombre}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Respuesta200> saveUbication(@PathVariable String latitud, 
-    @PathVariable String longitud, @PathVariable String telefono, @PathVariable String nombre) {
+    //@GetMapping(value="/registrarubigeo/{latitud}/{longitud}/{telefono}/{nombre}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value="/registrarubigeo",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Respuesta200> saveUbication(@Valid @RequestBody List<String> lstUbications) {
         try {
-            if (usuarioService.isActiveServiceUser(telefono)) {
-                PruebaGCb pruebaGCb = new PruebaGCb();
-                pruebaGCb.setFechaRegistro(new Date());
-                pruebaGCb.setGpsCoordenadas(latitud + "/" + longitud);
-                pruebaGCb.setNumeroTelefono(telefono);
-                pruebaGCb.setNombreUsuario(nombre);
-                pruebaGpsService.grabarGps(pruebaGCb);
-                return ResponseEntity.ok().body(new Respuesta200("200"));
-            } else {
-                return ResponseEntity.ok().body(new Respuesta200("450"));
+            for (String dataLocation : lstUbications) {
+                String[] aDatos = dataLocation.split("#");
+                if (usuarioService.isActiveServiceUser(aDatos[0])) {
+                    if (aDatos[4].equals("NC")) {
+                        PruebaGCb pruebaGCb = new PruebaGCb();
+                        pruebaGCb.setFechaRegistro(new Date());
+                        pruebaGCb.setGpsCoordenadas(aDatos[2] + "/" + aDatos[3]);
+                        pruebaGCb.setNumeroTelefono(aDatos[0]);
+                        pruebaGCb.setNombreUsuario(aDatos[1]);
+                        pruebaGpsService.grabarGps(pruebaGCb);
+                    } 
+                } else {
+                    return ResponseEntity.ok().body(new Respuesta200("450"));
+                }
             }
+            return ResponseEntity.ok().body(new Respuesta200("200"));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(null);

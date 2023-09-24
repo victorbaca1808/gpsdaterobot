@@ -1,6 +1,7 @@
 package com.peru.combi.service;
 
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +31,18 @@ public class EmpresasGrupoServiceImpl implements EmpresasGrupoService {
     @Override
     public Respuesta200 getDateServer() throws HttpClientErrorException, ParseException {
         try {
-            Respuesta200 vRespuesta200 = new Respuesta200("200",new Date().toString());
+            Calendar c = Calendar.getInstance();
+            c.setTime(new Date()); 
+
+            String vFechaRespuesta = String.valueOf(c.get(Calendar.DAY_OF_MONTH)) + "/" +  
+            String.valueOf((c.get(Calendar.MONTH + 1) > 9?"":"0")) + String.valueOf(c.get(Calendar.MONTH + 1)) + "/" +
+            String.valueOf(c.get(Calendar.YEAR)) + " " +
+            String.valueOf((c.get(Calendar.HOUR) > 9?"":"0") + String.valueOf(c.get(Calendar.HOUR))) + ":" +
+            String.valueOf((c.get(Calendar.MINUTE) > 9?"":"0") + String.valueOf(c.get(Calendar.MINUTE))) + ":" + 
+            String.valueOf((c.get(Calendar.SECOND) > 9?"":"0") + String.valueOf(c.get(Calendar.SECOND))) + " " +
+            String.valueOf(c.get(Calendar.HOUR_OF_DAY)>= 12?"PM":"AM");
+            
+            Respuesta200 vRespuesta200 = new Respuesta200("200",vFechaRespuesta);
 			return vRespuesta200;
         } catch (Exception e) {
             throw new UnsupportedOperationException("Unimplemented method 'getDateServer'");

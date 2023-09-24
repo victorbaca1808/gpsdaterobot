@@ -1,7 +1,12 @@
 package com.peru.combi.controller;
 
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -42,6 +47,17 @@ public class GpsCombiController {
     @PostMapping(value="/registrarubigeo",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Respuesta200> saveUbication(@Valid @RequestBody List<String> lstUbications) {
         try {
+            Calendar c = Calendar.getInstance();
+            c.setTime(new Date()); 
+
+            String vFechaRespuesta = String.valueOf(c.get(Calendar.DAY_OF_MONTH)) + "/" +  
+            String.valueOf((c.get(Calendar.MONTH + 1) > 9?"":"0")) + String.valueOf(c.get(Calendar.MONTH + 1)) + "/" +
+            String.valueOf(c.get(Calendar.YEAR)) + " " +
+            String.valueOf((c.get(Calendar.HOUR) > 9?"":"0") + String.valueOf(c.get(Calendar.HOUR))) + ":" +
+            String.valueOf((c.get(Calendar.MINUTE) > 9?"":"0") + String.valueOf(c.get(Calendar.MINUTE))) + ":" + 
+            String.valueOf((c.get(Calendar.SECOND) > 9?"":"0") + String.valueOf(c.get(Calendar.SECOND))) + " " +
+            String.valueOf(c.get(Calendar.HOUR_OF_DAY)>= 12?"PM":"AM");
+  
             for (String dataLocation : lstUbications) {
                 String[] aDatos = dataLocation.split("#");
                 if (usuarioService.isActiveServiceUser(aDatos[0])) {
@@ -52,13 +68,15 @@ public class GpsCombiController {
                         pruebaGCb.setNumeroTelefono(aDatos[0]);
                         pruebaGCb.setNombreUsuario(aDatos[1]);
                         pruebaGpsService.grabarGps(pruebaGCb);
-                        
+
                     } 
                 } else {
-                    return ResponseEntity.ok().body(new Respuesta200("450",new Date().toString()));
+                    return ResponseEntity.ok().body(new Respuesta200("450",
+                    vFechaRespuesta.toString()));
                 }
             }
-            return ResponseEntity.ok().body(new Respuesta200("200",new Date().toString()));
+
+            return ResponseEntity.ok().body(new Respuesta200("200",vFechaRespuesta));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(null);

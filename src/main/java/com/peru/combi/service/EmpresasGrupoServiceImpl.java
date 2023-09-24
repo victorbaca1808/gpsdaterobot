@@ -35,7 +35,7 @@ public class EmpresasGrupoServiceImpl implements EmpresasGrupoService {
             c.setTime(new Date()); 
 
             String vFechaRespuesta = String.valueOf(c.get(Calendar.DAY_OF_MONTH)) + "/" +  
-            String.valueOf((c.get(Calendar.MONTH + 1) > 9?"":"0")) + String.valueOf(c.get(Calendar.MONTH + 1)) + "/" +
+            String.valueOf((c.get(Calendar.MONTH) + 1 > 9?"":"0")) + String.valueOf(c.get(Calendar.MONTH) + 1) + "/" +
             String.valueOf(c.get(Calendar.YEAR)) + " " +
             String.valueOf((c.get(Calendar.HOUR) > 9?"":"0") + String.valueOf(c.get(Calendar.HOUR))) + ":" +
             String.valueOf((c.get(Calendar.MINUTE) > 9?"":"0") + String.valueOf(c.get(Calendar.MINUTE))) + ":" + 

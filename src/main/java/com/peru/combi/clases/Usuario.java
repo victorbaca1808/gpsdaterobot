@@ -24,13 +24,19 @@ public class Usuario {
     @Column(name = "sigla_Grupo",  nullable = false)
     private String sigla_Grupo;
 
-    @Column(name = "emisor",  nullable = false)
-    private boolean emisor;
-
-    @Column(name = "enviar_Ubicacion_A_Todos",  nullable = false)
-    private boolean enviar_Ubicacion_A_Todos;
+    @Column(name = "driver",  nullable = false)
+    private boolean driver; 
 
     @Column(name = "servicio_activo",  nullable = false)
     private boolean servicio_activo;
+
+    @Column(name = "users",  nullable = false)
+    private boolean users;
+
+    @Column(name = "collector",  nullable = false)
+    private boolean collector;
+
+    @Column(name = "supervisor",  nullable = false)
+    private boolean supervisor;
 
 }

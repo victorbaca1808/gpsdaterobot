@@ -1,6 +1,7 @@
 package com.peru.combi.service;
 
 import java.text.ParseException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,8 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.peru.combi.clases.Usuario;
+import com.peru.combi.dto.DriversDto;
 import com.peru.combi.interfaces.UsuarioService;
 import com.peru.combi.repository.UsuarioRepository;
+ 
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService  {
@@ -32,9 +35,10 @@ public class UsuarioServiceImpl implements UsuarioService  {
     public boolean updateUsuario(Usuario usuario) throws HttpClientErrorException, ParseException {
         try {
 			usuarioRepository.updateUsuario(usuario.getNumero_Telefono(), usuario.getNombre_Usuario(),
-            usuario.getSigla_Grupo(), usuario.isEmisor(), usuario.isEnviar_Ubicacion_A_Todos());
+            usuario.getSigla_Grupo(), usuario.isDriver(),  
+            usuario.isUsers(),usuario.isCollector());
             
-            if (usuario.isEmisor()) {
+            if (usuario.isDriver()) {
                 usuarioRepository.updateStateServiceUser(usuario.getNumero_Telefono(), true);
             }
 
@@ -73,6 +77,15 @@ public class UsuarioServiceImpl implements UsuarioService  {
         } catch (Exception e) {
             e.printStackTrace();
             throw new UnsupportedOperationException("Unimplemented method 'obtenerUsuarioByNumberPhone'");
+        }
+    }
+
+    @Override
+    public List<DriversDto> getDriverActives() {
+        try {
+           return usuarioRepository.getDriverActives();
+        } catch (Exception e) {
+            throw new UnsupportedOperationException("Unimplemented method 'getDriverActives'");
         }
     }
 

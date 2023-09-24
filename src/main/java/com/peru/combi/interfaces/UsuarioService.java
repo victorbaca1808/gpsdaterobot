@@ -1,8 +1,11 @@
 package com.peru.combi.interfaces;
 
 import java.text.ParseException;
+import java.util.List;
+
 import org.springframework.web.client.HttpClientErrorException;
 import com.peru.combi.clases.Usuario;
+import com.peru.combi.dto.DriversDto;
 
 public interface UsuarioService {
  
@@ -15,5 +18,7 @@ public interface UsuarioService {
     void obtenerUsuarioByNumberPhone(String num_Telefono);
     
     boolean isActiveServiceUser(String num_Telefono);
+
+    List<DriversDto> getDriverActives();
 
 }

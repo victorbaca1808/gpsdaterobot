@@ -14,10 +14,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.peru.combi.clases.EmpresasGrupo;
 import com.peru.combi.clases.PruebaGCb;
 import com.peru.combi.clases.Respuesta200;
 import com.peru.combi.clases.Usuario;
 import com.peru.combi.clases.lastLocations;
+import com.peru.combi.dto.DriversDto;
+import com.peru.combi.interfaces.EmpresasGrupoService;
 import com.peru.combi.interfaces.PruebaGpsService;
 import com.peru.combi.interfaces.UsuarioService;
 
@@ -31,8 +35,10 @@ public class GpsCombiController {
 
     @Autowired
 	private PruebaGpsService pruebaGpsService;
+ 
+    @Autowired
+	private EmpresasGrupoService empresasGrupoService;
 
-    //@GetMapping(value="/registrarubigeo/{latitud}/{longitud}/{telefono}/{nombre}",produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(value="/registrarubigeo",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Respuesta200> saveUbication(@Valid @RequestBody List<String> lstUbications) {
         try {
@@ -48,10 +54,10 @@ public class GpsCombiController {
                         pruebaGpsService.grabarGps(pruebaGCb);
                     } 
                 } else {
-                    return ResponseEntity.ok().body(new Respuesta200("450"));
+                    return ResponseEntity.ok().body(new Respuesta200("450",new Date().toString()));
                 }
             }
-            return ResponseEntity.ok().body(new Respuesta200("200"));
+            return ResponseEntity.ok().body(new Respuesta200("200",new Date().toString()));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(null);
@@ -76,7 +82,7 @@ public class GpsCombiController {
             } else {
                 usuarioService.updateUsuario(vUsuario);
             }
-            return ResponseEntity.ok().body(new Respuesta200("200"));
+            return ResponseEntity.ok().body(new Respuesta200("200",""));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(null);
@@ -87,9 +93,36 @@ public class GpsCombiController {
     public ResponseEntity<Respuesta200> stopService(@PathVariable String telefono) {
         try {
             usuarioService.obtenerUsuarioByNumberPhone(telefono); 
-            return ResponseEntity.ok().body(new Respuesta200("200"));
+            return ResponseEntity.ok().body(new Respuesta200("200",new Date().toString()));
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseEntity.internalServerError().body(null);
+        }      
+    }
+    
+    @GetMapping(value="/obtenerchoferes",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<DriversDto>> getDrives() {
+        try {   
+            return ResponseEntity.ok().body(usuarioService.getDriverActives());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(null);
+        }      
+    }
+
+    @GetMapping(value="/obtenerRutas",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<EmpresasGrupo>> getRoots() {
+        try {   
+            return ResponseEntity.ok().body(empresasGrupoService.getRoots());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(null);
+        }      
+    }
+
+    @GetMapping(value="/obtenerFecha",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Respuesta200> getDateServer() {
+        try {   
+            return ResponseEntity.ok().body(empresasGrupoService.getDateServer());
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().body(null);
         }      
     }

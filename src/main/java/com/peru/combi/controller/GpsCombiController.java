@@ -52,6 +52,7 @@ public class GpsCombiController {
                         pruebaGCb.setNumeroTelefono(aDatos[0]);
                         pruebaGCb.setNombreUsuario(aDatos[1]);
                         pruebaGpsService.grabarGps(pruebaGCb);
+                        
                     } 
                 } else {
                     return ResponseEntity.ok().body(new Respuesta200("450",new Date().toString()));

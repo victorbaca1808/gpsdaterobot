@@ -82,16 +82,6 @@ public class GpsCombiController {
             return ResponseEntity.internalServerError().body(null);
         }      
     }
-
-    @GetMapping(value="/obtenerlocalizaciones/{telefono}/{nombre}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<lastLocations>> getUbications(@PathVariable String telefono, @PathVariable String nombre) {
-        try {   
-            return ResponseEntity.ok().body(pruebaGpsService.obtenerUltimas3Ubicaciones(telefono));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(null);
-        }      
-    }
-
     @PostMapping(value="/registrarusuario",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Respuesta200> saveUsers(@Valid @RequestBody Usuario vUsuario) {
         try {

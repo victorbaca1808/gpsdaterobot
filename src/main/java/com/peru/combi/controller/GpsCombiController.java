@@ -1,17 +1,12 @@
 package com.peru.combi.controller;
-
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
+ 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
+import java.util.List;  
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.ResponseEntity; 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,17 +14,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.RestController; 
 import com.peru.combi.clases.EmpresasGrupo;
 import com.peru.combi.clases.PruebaGCb;
 import com.peru.combi.clases.Respuesta200;
-import com.peru.combi.clases.Usuario;
-import com.peru.combi.clases.lastLocations;
+import com.peru.combi.clases.Usuario; 
 import com.peru.combi.dto.DriversDto;
 import com.peru.combi.interfaces.EmpresasGrupoService;
 import com.peru.combi.interfaces.PruebaGpsService;
-import com.peru.combi.interfaces.UsuarioService;
+import com.peru.combi.interfaces.UsuarioService; 
 
 @RestController
 @RequestMapping("/api")
@@ -47,7 +40,7 @@ public class GpsCombiController {
 
     @PostMapping(value="/registrarubigeo",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Respuesta200> saveUbication(@Valid @RequestBody List<String> lstUbications) {
-        try {
+        try { 
             Calendar c = Calendar.getInstance();
             c.setTime(new Date());  
             String vFechaRespuesta = String.valueOf(c.get(Calendar.DAY_OF_MONTH)) + "/" +  
@@ -136,4 +129,5 @@ public class GpsCombiController {
         }      
     }
 
+     
 }

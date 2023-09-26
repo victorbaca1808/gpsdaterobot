@@ -22,7 +22,11 @@ public class PruebaGpsServiceImpl implements PruebaGpsService {
     @Override 
 	public boolean grabarGps(PruebaGCb pruebaGCb) throws HttpClientErrorException, ParseException {
 		try {
-			pruebaGCbRepository.save(pruebaGCb);
+			pruebaGCbRepository.saveWithPoint(pruebaGCb.getNumeroTelefono(), pruebaGCb.getNombreUsuario(), 
+			String.format("POINT(%s %s)", pruebaGCb.getGpsCoordenadas().split("/")[0], pruebaGCb.getGpsCoordenadas().split("/")[1])
+			,pruebaGCb.getFechaRegistro());
+			
+			//pruebaGCbRepository.save(pruebaGCb);
 			return true;            
         } catch (Exception e) {
 			throw new HttpClientErrorException(HttpStatus.UNPROCESSABLE_ENTITY,e.getMessage());

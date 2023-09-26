@@ -1,4 +1,5 @@
 package com.peru.combi.clases;
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -6,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+ 
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "pruebagcb")
-public class PruebaGCb {
+public class PruebaGCb implements Serializable {
 
     @Id
 	@Column(name = "orden",  nullable = false)

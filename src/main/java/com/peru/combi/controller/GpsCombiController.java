@@ -128,6 +128,7 @@ public class GpsCombiController {
     @GetMapping(value="/obtenerFecha",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Respuesta200> getDateServer() {
         try {    
+            
             return ResponseEntity.ok().body(empresasGrupoService.getDateServer());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(null);

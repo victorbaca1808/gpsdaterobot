@@ -1,5 +1,6 @@
 package com.peru.combi.controller;
  
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;  
@@ -55,8 +56,12 @@ public class GpsCombiController {
                 String[] aDatos = dataLocation.split("#");
                 if (usuarioService.isActiveServiceUser(aDatos[0])) {
                     if (aDatos[4].equals("NC")) {
-                        PruebaGCb pruebaGCb = new PruebaGCb();
-                        pruebaGCb.setFechaRegistro(new Date());
+                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(format.parse(aDatos[5] + " 00:00:00"));
+                        calendar.add(Calendar.SECOND, Integer.parseInt(aDatos[6]));  
+                        PruebaGCb pruebaGCb = new PruebaGCb(); 
+                        pruebaGCb.setFechaRegistro(calendar.getTime());
                         pruebaGCb.setGpsCoordenadas(aDatos[2] + "/" + aDatos[3]);
                         pruebaGCb.setNumeroTelefono(aDatos[0]);
                         pruebaGCb.setNombreUsuario(aDatos[1]);
@@ -122,7 +127,7 @@ public class GpsCombiController {
 
     @GetMapping(value="/obtenerFecha",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Respuesta200> getDateServer() {
-        try {   
+        try {    
             return ResponseEntity.ok().body(empresasGrupoService.getDateServer());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(null);

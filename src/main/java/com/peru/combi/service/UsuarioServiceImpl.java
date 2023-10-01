@@ -1,6 +1,7 @@
 package com.peru.combi.service;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.peru.combi.clases.Usuario;
+import com.peru.combi.clases.UsuarioRutas;
 import com.peru.combi.dto.DriversDto;
 import com.peru.combi.interfaces.UsuarioService;
 import com.peru.combi.repository.UsuarioRepository;
+import com.peru.combi.repository.UsuarioRutasRepository;
  
 
 @Service
@@ -19,11 +22,22 @@ public class UsuarioServiceImpl implements UsuarioService  {
  
     @Autowired
 	private UsuarioRepository usuarioRepository;
+ 
+    @Autowired
+	private UsuarioRutasRepository usuarioRutasRepository;
     
     @Override 
-	public boolean saveUsuario(Usuario pUsuario) throws HttpClientErrorException, ParseException {
+	public boolean saveUsuario(Usuario pUsuario, int inicioRuta, Date pFechaInicio) throws HttpClientErrorException, ParseException {
 		try {
 			usuarioRepository.save(pUsuario);
+            if (inicioRuta == 1) {
+                UsuarioRutas usuarioRutas = new UsuarioRutas();
+                usuarioRutas.setNumero_Telefono(pUsuario.getNumero_Telefono());
+                usuarioRutas.setNombre_Usuario(pUsuario.getNombre_Usuario());
+                usuarioRutas.setFecha_Hora_Inicio(pFechaInicio);
+                usuarioRutas.setFecha_Hora_Final(null);
+                usuarioRutasRepository.save(usuarioRutas);
+            }
 			return true;            
         } catch (Exception e) {
             e.printStackTrace();
@@ -32,7 +46,7 @@ public class UsuarioServiceImpl implements UsuarioService  {
 	}
  
     @Override
-    public boolean updateUsuario(Usuario usuario) throws HttpClientErrorException, ParseException {
+    public boolean updateUsuario(Usuario usuario, int inicioRuta, Date pFechaInicio) throws HttpClientErrorException, ParseException {
         try {
 			usuarioRepository.updateUsuario(usuario.getNumero_Telefono(), usuario.getNombre_Usuario(),
             usuario.getSigla_Grupo(), usuario.isDriver(),  
@@ -40,6 +54,15 @@ public class UsuarioServiceImpl implements UsuarioService  {
             
             if (usuario.isDriver()) {
                 usuarioRepository.updateStateServiceUser(usuario.getNumero_Telefono(), true);
+            }
+            
+            if (inicioRuta == 1) {
+                UsuarioRutas usuarioRutas = new UsuarioRutas();
+                usuarioRutas.setNumero_Telefono(usuario.getNumero_Telefono());
+                usuarioRutas.setNombre_Usuario(usuario.getNombre_Usuario());
+                usuarioRutas.setFecha_Hora_Inicio(pFechaInicio);
+                usuarioRutas.setFecha_Hora_Final(null);
+                usuarioRutasRepository.save(usuarioRutas);
             }
 
             return true;            
@@ -60,9 +83,13 @@ public class UsuarioServiceImpl implements UsuarioService  {
     }
 
     @Override
-    public void obtenerUsuarioByNumberPhone(String num_Telefono) {
+    public Date terminarRuta(String num_Telefono) {
         try {
-            usuarioRepository.updateStateServiceUser(num_Telefono, false);            
+            Date vFecha = new Date();
+            usuarioRepository.updateStateServiceUser(num_Telefono, false);
+            int vOrden = usuarioRutasRepository.getIdUsuarioRutasByNumeroTelefono(num_Telefono);
+            usuarioRutasRepository.terminateServiceRoot(vFecha, vOrden);
+            return vFecha;
         } catch (Exception e) {
             e.printStackTrace();
             throw new UnsupportedOperationException("Unimplemented method 'obtenerUsuarioByNumberPhone'");

@@ -33,6 +33,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, String> {
 
     @Query( value ="Select numero_Telefono as Codigo, nombre_Usuario as Nombre from usuario where driver = 1 and servicio_activo = 1", nativeQuery = true)
 	List<DriversDto> getDriverActives();
-
+ 
 
 }

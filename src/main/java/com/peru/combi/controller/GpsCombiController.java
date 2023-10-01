@@ -21,6 +21,7 @@ import com.peru.combi.clases.PruebaGCb;
 import com.peru.combi.clases.Respuesta200;
 import com.peru.combi.clases.Usuario; 
 import com.peru.combi.dto.DriversDto;
+import com.peru.combi.dto.UsuarioDto;
 import com.peru.combi.interfaces.EmpresasGrupoService;
 import com.peru.combi.interfaces.PruebaGpsService;
 import com.peru.combi.interfaces.UsuarioService; 
@@ -41,7 +42,28 @@ public class GpsCombiController {
 
     @PostMapping(value="/registrarubigeo",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Respuesta200> saveUbication(@Valid @RequestBody List<String> lstUbications) {
-        try { 
+        try {
+            boolean cerrarRuta = false;  
+            for (String dataLocation : lstUbications) {
+                String[] aDatos = dataLocation.split("#");
+                if (cerrarRuta == false && !usuarioService.isActiveServiceUser(aDatos[0])) {
+                    cerrarRuta = true;
+                }
+
+                if (aDatos[4].equals("NC") || cerrarRuta) {
+                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(format.parse(aDatos[5] + " 00:00:00"));
+                    calendar.add(Calendar.SECOND, Integer.parseInt(aDatos[6]));  
+                    PruebaGCb pruebaGCb = new PruebaGCb(); 
+                    pruebaGCb.setFechaRegistro(calendar.getTime());
+                    pruebaGCb.setGpsCoordenadas(aDatos[2] + "/" + aDatos[3]);
+                    pruebaGCb.setNumeroTelefono(aDatos[0]);
+                    pruebaGCb.setNombreUsuario(aDatos[1]);
+                    pruebaGpsService.grabarGps(pruebaGCb);
+                }
+            }
+
             Calendar c = Calendar.getInstance();
             c.setTime(new Date());  
             String vFechaRespuesta = String.valueOf(c.get(Calendar.DAY_OF_MONTH)) + "/" +  
@@ -51,43 +73,41 @@ public class GpsCombiController {
             String.valueOf((c.get(Calendar.MINUTE) > 9?"":"0") + String.valueOf(c.get(Calendar.MINUTE))) + ":" + 
             String.valueOf((c.get(Calendar.SECOND) > 9?"":"0") + String.valueOf(c.get(Calendar.SECOND))) + " " +
             String.valueOf(c.get(Calendar.HOUR_OF_DAY)>= 12?"PM":"AM");
-  
-            for (String dataLocation : lstUbications) {
-                String[] aDatos = dataLocation.split("#");
-                if (usuarioService.isActiveServiceUser(aDatos[0])) {
-                    if (aDatos[4].equals("NC")) {
-                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(format.parse(aDatos[5] + " 00:00:00"));
-                        calendar.add(Calendar.SECOND, Integer.parseInt(aDatos[6]));  
-                        PruebaGCb pruebaGCb = new PruebaGCb(); 
-                        pruebaGCb.setFechaRegistro(calendar.getTime());
-                        pruebaGCb.setGpsCoordenadas(aDatos[2] + "/" + aDatos[3]);
-                        pruebaGCb.setNumeroTelefono(aDatos[0]);
-                        pruebaGCb.setNombreUsuario(aDatos[1]);
-                        pruebaGpsService.grabarGps(pruebaGCb);
-
-                    } 
-                } else {
-                    return ResponseEntity.ok().body(new Respuesta200("450",
-                    vFechaRespuesta.toString()));
-                }
+            
+            if (cerrarRuta) {
+                return ResponseEntity.ok().body(new Respuesta200("450", vFechaRespuesta.toString()));
+            } else {
+                return ResponseEntity.ok().body(new Respuesta200("200",vFechaRespuesta));
             }
 
-            return ResponseEntity.ok().body(new Respuesta200("200",vFechaRespuesta));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(null);
         }      
     }
-    @PostMapping(value="/registrarusuario",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Respuesta200> saveUsers(@Valid @RequestBody Usuario vUsuario) {
+    @PostMapping(value="/registrarusuario/{inicio}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Respuesta200> saveUsers(@PathVariable int inicio, 
+                                                  @Valid @RequestBody UsuarioDto vUsuario) {
         try {
             Usuario vDatosUsuario = usuarioService.obtenerUsuario(vUsuario.getNumero_Telefono(), vUsuario.getNombre_Usuario());
+            Usuario usuario = new Usuario();
+            usuario.setNumero_Telefono(vUsuario.getNumero_Telefono());
+            usuario.setNombre_Usuario(vUsuario.getNombre_Usuario());
+            usuario.setSigla_Grupo(vUsuario.getSigla_Grupo());
+            usuario.setServicio_activo(vUsuario.isServicio_Activo());
+            usuario.setDriver(vUsuario.isDriver());
+            usuario.setCollector(vUsuario.isCollector());
+            usuario.setSupervisor(vUsuario.isSupervisor());
+            usuario.setUsers(vUsuario.isUsers());
+
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(format.parse(vUsuario.getFechaInicio())); 
+            
             if (vDatosUsuario == null) {
-                usuarioService.saveUsuario(vUsuario);
+                usuarioService.saveUsuario(usuario,inicio, calendar.getTime());
             } else {
-                usuarioService.updateUsuario(vUsuario);
+                usuarioService.updateUsuario(usuario,inicio, calendar.getTime());
             }
             return ResponseEntity.ok().body(new Respuesta200("200",""));
         } catch (Exception e) {
@@ -99,8 +119,8 @@ public class GpsCombiController {
     @PutMapping(value="/pararservicio/{telefono}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Respuesta200> stopService(@PathVariable String telefono) {
         try {
-            usuarioService.obtenerUsuarioByNumberPhone(telefono); 
-            return ResponseEntity.ok().body(new Respuesta200("200",new Date().toString()));
+            Date vFecha = usuarioService.terminarRuta(telefono); 
+            return ResponseEntity.ok().body(new Respuesta200("200",vFecha.toString()));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(null);

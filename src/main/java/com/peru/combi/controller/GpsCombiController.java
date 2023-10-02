@@ -109,7 +109,7 @@ public class GpsCombiController {
             } else {
                 usuarioService.updateUsuario(usuario,inicio, calendar.getTime());
             }
-            return ResponseEntity.ok().body(new Respuesta200("200",""));
+            return ResponseEntity.ok().body(new Respuesta200("200",format.parse(vUsuario.getFechaInicio())));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(null);

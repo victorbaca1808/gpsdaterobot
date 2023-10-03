@@ -44,22 +44,17 @@ public class GpsCombiController {
     public ResponseEntity<Respuesta200> saveUbication(@Valid @RequestBody List<String> lstUbications) {
         try {
             boolean cerrarRuta = false;  
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());  
+
             for (String dataLocation : lstUbications) {
                 String[] aDatos = dataLocation.split("#");
                 if (cerrarRuta == false && !usuarioService.isActiveServiceUser(aDatos[0])) {
                     cerrarRuta = true;
+                } 
+                
+                if (aDatos[4].equals("NC") || cerrarRuta) { 
                     
-                }
-                
-                int vHour = Integer.parseInt(aDatos[6].substring(0,2));
-                int vMinute = Integer.parseInt(aDatos[6].substring(3,5));
-                int vSecond = Integer.parseInt(aDatos[6].substring(6,8));
-                
-                if (aDatos[4].equals("NC") || cerrarRuta) {
-                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(format.parse(aDatos[5] + " 00:00:00"));
-                    calendar.add(Calendar.SECOND, ((vHour * 60) * 60) + (vMinute * 60) + vSecond);  
                     PruebaGCb pruebaGCb = new PruebaGCb(); 
                     pruebaGCb.setFechaRegistro(calendar.getTime());
                     pruebaGCb.setGpsCoordenadas(aDatos[2] + "/" + aDatos[3]);
@@ -69,17 +64,14 @@ public class GpsCombiController {
                 }
             }
 
-            Calendar c = Calendar.getInstance();
-            c.setTime(new Date());  
             String vFechaRespuesta = 
-            (c.get(Calendar.DAY_OF_MONTH) + 1 > 9?"":"0") + 
-            String.valueOf(c.get(Calendar.DAY_OF_MONTH)) + "/" +  
-            String.valueOf((c.get(Calendar.MONTH) + 1 > 9?"":"0")) + String.valueOf(c.get(Calendar.MONTH)+ 1) + "/" +
-            String.valueOf(c.get(Calendar.YEAR)) + " " +
-            String.valueOf((c.get(Calendar.HOUR) > 9?"":"0") + String.valueOf(c.get(Calendar.HOUR))) + ":" +
-            String.valueOf((c.get(Calendar.MINUTE) > 9?"":"0") + String.valueOf(c.get(Calendar.MINUTE))) + ":" + 
-            String.valueOf((c.get(Calendar.SECOND) > 9?"":"0") + String.valueOf(c.get(Calendar.SECOND))) + " " +
-            String.valueOf(c.get(Calendar.HOUR_OF_DAY)>= 12?"PM":"AM");
+            (calendar.get(Calendar.DAY_OF_MONTH) + 1 > 9?"":"0") + String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)) + "/" +  
+            (calendar.get(Calendar.MONTH) + 1 > 9?"":"0") + String.valueOf(calendar.get(Calendar.MONTH)+ 1) + "/" +
+            String.valueOf(calendar.get(Calendar.YEAR)) + " " +
+            (calendar.get(Calendar.HOUR) > 9?"":"0") + String.valueOf(calendar.get(Calendar.HOUR)) + ":" +
+            (calendar.get(Calendar.MINUTE) > 9?"":"0") + String.valueOf(calendar.get(Calendar.MINUTE)) + ":" + 
+            (calendar.get(Calendar.SECOND) > 9?"":"0") + String.valueOf(calendar.get(Calendar.SECOND)) + " " +
+            (calendar.get(Calendar.HOUR_OF_DAY)>= 12?"PM":"AM");
             
             if (cerrarRuta) {
                 return ResponseEntity.ok().body(new Respuesta200("450", vFechaRespuesta.toString()));

@@ -48,6 +48,7 @@ public class GpsCombiController {
                 String[] aDatos = dataLocation.split("#");
                 if (cerrarRuta == false && !usuarioService.isActiveServiceUser(aDatos[0])) {
                     cerrarRuta = true;
+                    
                 }
                 
                 int vHour = Integer.parseInt(aDatos[6].substring(0,2));

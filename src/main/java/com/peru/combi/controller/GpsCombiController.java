@@ -49,12 +49,16 @@ public class GpsCombiController {
                 if (cerrarRuta == false && !usuarioService.isActiveServiceUser(aDatos[0])) {
                     cerrarRuta = true;
                 }
-
+                
+                int vHour = Integer.parseInt(aDatos[6].substring(0,2));
+                int vMinute = Integer.parseInt(aDatos[6].substring(3,5));
+                int vSecond = Integer.parseInt(aDatos[6].substring(6,8));
+                
                 if (aDatos[4].equals("NC") || cerrarRuta) {
                     SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(format.parse(aDatos[5] + " 00:00:00"));
-                    calendar.add(Calendar.SECOND, Integer.parseInt(aDatos[6]));  
+                    calendar.add(Calendar.SECOND, ((vHour * 60) * 60) + (vMinute * 60) + vSecond);  
                     PruebaGCb pruebaGCb = new PruebaGCb(); 
                     pruebaGCb.setFechaRegistro(calendar.getTime());
                     pruebaGCb.setGpsCoordenadas(aDatos[2] + "/" + aDatos[3]);
@@ -66,7 +70,9 @@ public class GpsCombiController {
 
             Calendar c = Calendar.getInstance();
             c.setTime(new Date());  
-            String vFechaRespuesta = String.valueOf(c.get(Calendar.DAY_OF_MONTH)) + "/" +  
+            String vFechaRespuesta = 
+            (c.get(Calendar.DAY_OF_MONTH) + 1 > 9?"":"0") + 
+            String.valueOf(c.get(Calendar.DAY_OF_MONTH)) + "/" +  
             String.valueOf((c.get(Calendar.MONTH) + 1 > 9?"":"0")) + String.valueOf(c.get(Calendar.MONTH)+ 1) + "/" +
             String.valueOf(c.get(Calendar.YEAR)) + " " +
             String.valueOf((c.get(Calendar.HOUR) > 9?"":"0") + String.valueOf(c.get(Calendar.HOUR))) + ":" +
@@ -109,7 +115,7 @@ public class GpsCombiController {
             } else {
                 usuarioService.updateUsuario(usuario,inicio, calendar.getTime());
             }
-            return ResponseEntity.ok().body(new Respuesta200("200",format.parse(vUsuario.getFechaInicio())));
+            return ResponseEntity.ok().body(new Respuesta200("200",""));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(null);

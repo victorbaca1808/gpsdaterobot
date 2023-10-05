@@ -103,7 +103,7 @@ public class UsuarioServiceImpl implements UsuarioService  {
             return usuario.isServicio_activo();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new UnsupportedOperationException("Unimplemented method 'obtenerUsuarioByNumberPhone'");
+            throw new UnsupportedOperationException("Unimplemented method 'isActiveServiceUser'");
         }
     }
 

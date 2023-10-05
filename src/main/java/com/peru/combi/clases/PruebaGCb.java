@@ -35,5 +35,7 @@ public class PruebaGCb implements Serializable {
     @Column(name = "fecha_Registro",  nullable = false)
     private Date fechaRegistro;
 
+    @Column(name = "gps_CoordenadasObtenida",  nullable = false)
+    private String gps_CoordenadasObtenida;
 
 }
